@@ -588,6 +588,10 @@ class Doku_Renderer_xhtml extends Doku_Renderer {
         if ($id == $ID) {
             $link['pre']    = '<span class="curid">';
             $link['suf']    = '</span>';
+        // highlight link to parent page (mainly for main navigation menu)
+        } elseif (strpos($ID, $id.":")===0) {
+          $link['pre']    = '<span class="parentid">';
+          $link['suf']    = '</span>';          
         }
         $link['more']   = '';
         $link['class']  = $class;
