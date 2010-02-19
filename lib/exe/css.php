@@ -52,8 +52,10 @@ function css_out(){
 
     // load template styles
     $tplstyles = array();
-    if(@file_exists($tplinc.'style.ini')){
-        $ini = parse_ini_file($tplinc.'style.ini',true);
+    $tplstyles = array();
+    $inifile = select_style_ini($tplinc);
+    if ($inifile) {
+        $ini = parse_ini_file($inifile,true);
         foreach($ini['stylesheets'] as $file => $mode){
             $tplstyles[$mode][$tplinc.$file] = $tpldir;
         }
@@ -155,6 +157,8 @@ function css_cacheok($cache,$files,$tplinc){
     // some additional files to check
     $files = array_merge($files, getConfigFiles('main'));
     $files[] = $tplinc.'style.ini';
+    $inifile = select_style_ini($tplinc);
+    if ($inifile) $files[] = $inifile;
     $files[] = __FILE__;
 
     // now walk the files
@@ -173,11 +177,39 @@ function css_cacheok($cache,$files,$tplinc){
  * @author Andreas Gohr <andi@splitbrain.org>
  */
 function css_applystyle($css,$tplinc){
-    if(@file_exists($tplinc.'style.ini')){
-        $ini = parse_ini_file($tplinc.'style.ini',true);
+    $inifile = select_style_ini($tplinc);
+    if($inifile){
+        $ini = parse_ini_file($inifile,true);
         $css = strtr($css,$ini['replacements']);
     }
     return $css;
+}
+
+/**
+ * Select the style.ini file to use
+ *
+ * @author Giovanni Cangiani <giovanni.cangiani@epfl.ch>
+ */
+function select_style_ini($tplinc) {
+  global $conf;
+  // first check for style-specific style.ini file
+  $s=$conf['tpl'][$conf['template']]['style'];
+  if ($s) {
+    $f = $tplinc.'style_'.$s.'.ini';
+    if (@file_exists($f)) {
+      error_log( "s=$s   f=$f     -- found", 0);
+      return $f;
+    }
+  }
+  // then check for default style.ini file
+  $f = $tplinc.'style.ini';
+  if (@file_exists($f)) {
+    error_log( "s=$s   f=$f     -- found", 0);
+    return $f;
+  }
+  // nothing found
+  error_log( "s=$s   f=$f     -- not found", 0);
+  return false;
 }
 
 /**
