@@ -197,18 +197,15 @@ function select_style_ini($tplinc) {
   if ($s) {
     $f = $tplinc.'style_'.$s.'.ini';
     if (@file_exists($f)) {
-      error_log( "s=$s   f=$f     -- found", 0);
       return $f;
     }
   }
   // then check for default style.ini file
   $f = $tplinc.'style.ini';
   if (@file_exists($f)) {
-    error_log( "s=$s   f=$f     -- found", 0);
     return $f;
   }
   // nothing found
-  error_log( "s=$s   f=$f     -- not found", 0);
   return false;
 }
 
